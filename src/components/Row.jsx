@@ -15,15 +15,25 @@ export class FavoritRow extends Component {
   }
 }
 
+export class EmptyRow extends Component {
+  render() {
+    return (
+      <div className='grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-2 pt-4'>
+        {this.props.children}
+      </div>
+    )
+  }
+}
+
 export class NowPlayingRow extends Component {
   render() {
       return (
-        <div>
-            <Label><FaPlay /> Now Playing</Label>
+        <>
+            <Label><FaPlay className='text-xs mr-1'/> Now Playing</Label>
             <div className='grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-2'>
                 {this.props.children}
             </div>
-        </div>
+        </>
     )
   }
 }

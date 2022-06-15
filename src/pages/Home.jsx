@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import Footer from '../components/Footer'
-import Navbar from '../components/Navbar'
-import {Card,Card2} from '../components/Card'
-import { FavoritRow,NowPlayingRow } from '../components/Row'
+import Navbar, { NavbarEmpty } from '../components/Navbar'
+import {Card, EmptyCard} from '../components/Card'
+import { NowPlayingRow,EmptyRow } from '../components/Row'
 import Container from '../components/Container'
+import axios from 'axios'
 
 export class Home extends Component {
     state = {
@@ -72,54 +73,78 @@ export class Home extends Component {
                 poster: 'https://cdn.cgv.id/uploads/movie/pictures/19042900.jpg'
             },
         ],
-        movieFavorit : []
+        movieFavorit: [],
+        loading: true,
+        theme:'light',
+    }
+    componentDidMount() {
+        this.fetchData()
+    }
+    fetchData() {
+        axios.get(
+            "https://api.themoviedb.org/3/movie/now_playing?api_key=c1710d20ea4f07d19c21aadbae4cb062&language=en-US"
+        ).then((res) => {
+            const {results} = res.data
+            this.setState({ movieList: results})
+        }).catch((err) => {
+            alert(err)
+        }).finally(()=> this.setState({loading:false}))
     }
     addFavorit(movie) {
         let temp = this.state.movieFavorit.slice()
         temp.push(movie)
         this.setState({ movieFavorit: temp })
     }
-    delFavorit(id) {
-        let temp = this.state.movieFavorit.slice()
-        temp.splice(id,1)
-        this.setState({movieFavorit:temp})
+    changeTheme() {
+        if (this.state.theme === 'dark') {
+            this.setState({theme : 'light'},()=>document.documentElement.classList.remove('dark'))
+        } else if (this.state.theme === 'light') {
+            this.setState({theme : 'dark'},()=>document.documentElement.classList.add('dark'))
+        }
     }
+    
     render() {
-        return (
-            <div className='bg-slate-200'>
-                <Navbar />
-                <Container>
-                    <FavoritRow>
-                        {this.state.movieFavorit.map((movie,idx) => {
-                            return (
-                                <Card2 key={idx}
-                                    title={movie.title}
-                                    poster={movie.poster}
-                                    rating={movie.rating}
-                                    release={movie.release}
-                                    onClick={()=>this.delFavorit(idx)}
-                                />
+        let skeleton = []
+        for (let i = 0; i < 20; i++) {
+            skeleton.push(<EmptyCard key={i} />)
+        }
+
+        if (this.state.loading) {
+            return (
+                <div className='bg-slate-200 dark:bg-slate-900'>
+                    <NavbarEmpty />
+                    <Container>
+                        <EmptyRow>
+                            {skeleton}
+                        </EmptyRow>
+                    </Container>
+                </div>
+            )
+        } else {
+            return (
+                <div className='bg-slate-200 dark:bg-slate-900'>
+                    <Navbar onClick={() => this.changeTheme()} theme={ this.state.theme } />
+                    <Container>
+                        <NowPlayingRow>
+                        {
+                            this.state.movieList.map((movie) =>
+                                (
+                                    <Card key={movie.id}
+                                        title={movie.title}
+                                        poster={movie.poster_path}
+                                        rating={movie.vote_average}
+                                        release={movie.release_date}
+                                        onClick={() => this.addFavorit(movie)}
+                                    />
+                                )
                             )
-                        })}   
-                    </FavoritRow>
-                    < NowPlayingRow>
-                        {this.state.movieList.map((movie) => {
-                            return (
-                                <Card key={movie.id}
-                                    title={movie.title}
-                                    poster={movie.poster}
-                                    rating={movie.rating}
-                                    release={movie.release}
-                                    onClick={()=> this.addFavorit(movie)}
-                                
-                                />
-                            )
-                        })}   
-                    </NowPlayingRow>
-                </Container>
-                <Footer />
-            </div>
-        )
+                        }            
+                        </NowPlayingRow>
+                    </Container>
+                    <Footer />
+                </div>
+            )
+        }
   }
 }
 
