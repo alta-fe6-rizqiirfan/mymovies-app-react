@@ -1,13 +1,17 @@
 import React, { Component } from 'react'
-import { RiMoonClearLine,RiSunLine } from "react-icons/ri"
+import { RiMoonClearLine, RiSunLine } from "react-icons/ri"
+import { Link } from 'react-router-dom'
+import {GiStarsStack} from 'react-icons/gi'
 
 export default class Navbar extends Component {
   render() {
     return (
       <nav className='flex justify-between py-4 text-slate-900 px-5 xl:px-9 items-center sticky top-0 z-50 border-b-[1px] border-b-slate-300 dark:border-b-black bg-slate-100 dark:bg-slate-800 dark:text-white'>
-        <div className='brand-logo text-3xl'>MyMovies</div>
+        <Link to='/' className='brand-logo text-3xl flex gap-2 items-center'>
+          <GiStarsStack/>maxicorn
+        </Link>
         <div className='flex items-center gap-4'>
-          <span>My Favorit List</span>
+          <Link to={'/favorite'}>My Favorit List</Link>
           <button onClick={this.props.onClick} className='rounded-full bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 p-2 text-2xl'>{this.props.theme === "dark"? <RiSunLine /> :<RiMoonClearLine />}</button>
         </div>
       </nav>
