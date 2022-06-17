@@ -7,7 +7,7 @@ or this [http://maxicorn.surge.sh](http://maxicorn.surge.sh)
 
 ## About this project
 
-this project is web application that show you refference movie from api tmdb
+this project is web application that show you refference movie from api [tmdb](https://developers.themoviedb.org/3/)
 
 ### Built with
 
