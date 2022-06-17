@@ -1,10 +1,9 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import Page from '../components/Page'
 import Container from '../components/Container'
 
-export default class ErrorNoRoute extends Component {
-  render() {
+const ErrorNoRoute = () => {
     return (
         <Page>
             <Container>
@@ -16,5 +15,6 @@ export default class ErrorNoRoute extends Component {
             </Container>
         </Page  >
     )
-  }
 }
+
+export default ErrorNoRoute
