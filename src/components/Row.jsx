@@ -20,10 +20,10 @@ export const EmptyRow = (props) => {
   )
 }
 
-export const NowPlayingRow = (props) => {
-    return (
+export const RowLabel = (props) => {  
+  return (
       <>
-          <Label><FaPlay className='text-xs mr-1'/> Now Playing</Label>
+      {props.title ? <Label>{props.icon}{props.title}</Label> : ''} 
           <div className='grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-2'>
               {props.children}
           </div>

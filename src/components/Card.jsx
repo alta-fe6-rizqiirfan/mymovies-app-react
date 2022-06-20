@@ -1,6 +1,6 @@
 import React from 'react'
-import Button from './Button'
-import { FaStar,FaPlus} from "react-icons/fa";
+import Button,{ButtonFav} from './Button'
+import { FaStar,FaPlus, FaTimes} from "react-icons/fa";
 
 export const Card = (props) => {
     return (
@@ -20,7 +20,12 @@ export const Card = (props) => {
             <span onClick={props.goToDetail} className='cursor-pointer'> ({props.release ? props.release.split('-')[0] : ''})</span>
           </div>
         </div>
-        <Button onClick={props.onClick}><FaPlus className='mr-1' />Add to favorite</Button>   
+        { !props.isFavorite ? (
+            <Button onClick={props.addFavorite}><FaPlus className='mr-1' />Add to favorite</Button>   
+          ) : (
+            <ButtonFav onClick={props.delFavorite}><FaTimes className='mr-1' /> Favorite</ButtonFav>   
+          )
+        }
     </div>
     )
 }

@@ -1,26 +1,34 @@
 import React, { useState,useEffect } from 'react'
 import Footer from '../components/Footer'
 import Navbar, { NavbarEmpty } from '../components/Navbar'
-import {Card, EmptyCard} from '../components/Card'
-import { NowPlayingRow, EmptyRow } from '../components/Row'
+import { Card, EmptyCard } from '../components/Card'
+import { Snackbar } from '@mui/material'
+import MuiAlert from '@mui/material/Alert';
+import { RowLabel, EmptyRow } from '../components/Row'
+import { FaPlay } from 'react-icons/fa'
 import Page from '../components/Page'
 import Container from '../components/Container'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { reduxAction } from '../utils/redux/actions/action'
+import { useDispatch,useSelector } from 'react-redux'
 
 const Home = () => {
+    const dispatch = useDispatch()
+    const favorite = useSelector((state) => state.favorite)
     const [movieList,setMovieList]= useState([])
-    const [loading,setLoading]=useState(true)
-    const [theme, setTheme] = useState('light')
+    const [loading, setLoading] = useState(true)
+    const [snack, setSnack] = useState(false)
+    const [condition, setCondition] = useState()
     const navigate = useNavigate()
+
+    const Alert = React.forwardRef(function Alert(props, ref) {
+        return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+    });
     
     useEffect(() => {
         fetchData()
     }, [])
-
-    useEffect(() => {
-        theme === 'dark'?document.documentElement.classList.add('dark'):document.documentElement.classList.remove('dark')
-    },[theme])
     
     function fetchData() {
         axios.get(
@@ -35,8 +43,33 @@ const Home = () => {
     function goToDetail(id) {
         navigate(`movie/${id}`)
     }
-    function changeTheme() {
-        theme === 'dark'? setTheme('light'):setTheme('dark')
+    function addFavorite(movie) {
+        let storageFavorite = localStorage.getItem("favoriteMov")
+        if (storageFavorite) {
+            const temp = JSON.parse(storageFavorite)
+            temp.push(movie)
+            localStorage.setItem("favoriteMov", JSON.stringify(temp))
+            dispatch(reduxAction("SET_FAVORITE",temp))
+        } else {
+            localStorage.setItem("favoriteMov",JSON.stringify([movie]))
+            dispatch(reduxAction("SET_FAVORITE",[movie]))
+        }
+        setSnack(true)
+        setCondition('add')
+    }
+
+    function delFavorite(movie_id) {
+        let newFavorite = favorite.slice()
+        let idx = favorite.findIndex((search)=>search.id === movie_id) 
+        newFavorite.splice(idx, 1)
+        localStorage.setItem("favoriteMov", JSON.stringify(newFavorite))
+        dispatch(reduxAction("SET_FAVORITE", newFavorite))
+        setSnack(true)
+        setCondition('del')
+    }
+
+    const closeSnack = () => {
+        setSnack(false)
     }
     
     if (loading) {
@@ -57,9 +90,9 @@ const Home = () => {
     } else {
         return (
             <Page>
-                <Navbar onClick={() => changeTheme()} theme={ theme } />
+                <Navbar />
                 <Container>
-                    <NowPlayingRow>
+                    <RowLabel title ="Now Playing" icon = {<FaPlay className='text-xs mr-1'/>}>
                     {
                         movieList.map((movie) =>
                             (
@@ -69,11 +102,32 @@ const Home = () => {
                                     rating={movie.vote_average}
                                     release={movie.release_date}
                                     goToDetail={() => goToDetail(movie.id)}
+                                    addFavorite={() => addFavorite(movie)}
+                                    isFavorite={favorite.find((search) => search.id === movie.id)}
+                                    delFavorite={()=> delFavorite(movie.id)}
                                 />
                             )
                         )
                     }            
-                    </NowPlayingRow>
+                    </RowLabel>
+                    <Snackbar
+                        anchorOrigin={{vertical:'bottom',horizontal:'right'}}
+                    open={snack}
+                    onClose={closeSnack}
+                    autoHideDuration={2000}
+                    >
+                        {condition === "add" ?
+                            (
+                                <Alert onClose={closeSnack} severity="success" sx={{ width: '100%' }}>
+                                    Success Added to My Favorite List
+                                </Alert>
+                            ) : (
+                                <Alert onClose={closeSnack} className="bg-red-900" severity="error" sx={{ width: '100%' }}>
+                                    Success Remove from My Favorite List
+                                </Alert>
+                            )
+                        }
+                    </Snackbar>
                 </Container>
                 <Footer />
             </Page>

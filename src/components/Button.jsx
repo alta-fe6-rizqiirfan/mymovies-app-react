@@ -12,5 +12,17 @@ const Button = (props) => {
   )
 }
 
+export const ButtonFav = (props) => {
+  return (
+    <button onClick={props.onClick}
+      className='bg-gradient-to-l from-red-600 to-red-900 text-sm text-white
+      hover:from-red-900 hover:to-red-800 px-4 py-2
+      rounded-[0.2rem] items-center flex justify-center
+      font-bold' >
+          {props.children}
+      </button>
+  )
+}
+
 export default Button
 
