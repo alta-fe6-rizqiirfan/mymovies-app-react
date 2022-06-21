@@ -18,7 +18,7 @@ const RoutesApp = () => {
   useEffect(() => {
     const storageFavorite = localStorage.getItem("favoriteMov")
     if (storageFavorite) {
-      dispatch(reduxAction("SET_FAVORITE",JSON.parse(storageFavorite)))
+      dispatch(reduxAction("SET_FAVORITE", JSON.parse(storageFavorite)))
     }
   },[])
 

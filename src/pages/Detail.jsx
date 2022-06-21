@@ -6,12 +6,16 @@ import { EmptyRow, HeadlineRow, SimilarRow } from '../components/Row'
 import { Card } from '../components/Card'
 import Page from '../components/Page'
 import Container from '../components/Container'
-import Button from '../components/Button'
+import Button,{ButtonFav} from '../components/Button'
 import axios from 'axios'
 import { useNavigate,useParams } from 'react-router-dom'
-import { FaPlus } from 'react-icons/fa'
+import { FaTimes,FaPlus } from 'react-icons/fa'
+import { reduxAction } from '../utils/redux/actions/action'
+import { useDispatch,useSelector } from 'react-redux'
 
 const Detail = () => {
+    const dispatch = useDispatch()
+    const favorite = useSelector((state)=>state.favorite)
     const [data,setData]= useState({})
     const [similarMovies,setSimilarMovies]= useState({})
     const [loading,setLoading]= useState(true)
@@ -20,7 +24,6 @@ const Detail = () => {
     
     useEffect(() => {
         fetchData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []) 
     
     useEffect(() => {
@@ -29,7 +32,6 @@ const Detail = () => {
         } else {
             window.scrollTo(0, 0)
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[loading])
     
     useEffect(() => {
@@ -62,6 +64,25 @@ const Detail = () => {
     }
     function goToDetail(id) {
         navigate(`/movie/${id}`, { replace: true })
+    }
+    function addFavorite(movie) {
+        let storageFavorite = localStorage.getItem("favoriteMov")
+        if (storageFavorite) {
+            const temp = JSON.parse(storageFavorite)
+            temp.push(movie)
+            localStorage.setItem("favoriteMov", JSON.stringify(temp))
+            dispatch(reduxAction("SET_FAVORITE",temp))
+        } else {
+            localStorage.setItem("favoriteMov",JSON.stringify([movie]))
+            dispatch(reduxAction("SET_FAVORITE",[movie]))
+        }
+    }
+    function delFavorite(movie_id) {
+        let newFavorite = favorite.slice()
+        let idx = favorite.findIndex((search)=>search.id === movie_id) 
+        newFavorite.splice(idx, 1)
+        localStorage.setItem("favoriteMov", JSON.stringify(newFavorite))
+        dispatch(reduxAction("SET_FAVORITE", newFavorite))
     }
     function convertTime (duration) {
         let h='',m=''
@@ -113,7 +134,12 @@ const Detail = () => {
                                     {data.tagline}
                                 </p>
                                 <p>
-                                    <Button><FaPlus className='mr-1' /> Add To Favorite</Button>
+                                    {favorite.find((search) => search.id === data.id) ? (
+                                        <ButtonFav onClick={()=>delFavorite(data.id)}><FaTimes className='mr-1' /> Favorite</ButtonFav>
+                                    ): (       
+                                        <Button onClick={()=>addFavorite(data)}><FaPlus className='mr-1' /> Add To Favorite</Button>
+                                    )
+                                    }
                                 </p>
                             </div>
                         </div>
@@ -132,6 +158,9 @@ const Detail = () => {
                                         rating={movie.vote_average}
                                         release={movie.release_date}
                                         goToDetail={() => goToDetail(movie.id)}
+                                        isFavorite={favorite.find((search) => search.id === movie.id)}
+                                            addFavorite={() => addFavorite(movie)}
+                                            delFavorite={()=> delFavorite(movie.id)}
                                     />)
                                 } return ''
                             })
