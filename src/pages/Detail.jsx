@@ -1,3 +1,4 @@
+
 import React, { useState,useEffect } from 'react'
 import Footer from '../components/Footer'
 import Navbar, { NavbarEmpty } from '../components/Navbar'
@@ -24,6 +25,7 @@ const Detail = () => {
     
     useEffect(() => {
         fetchData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []) 
     
     useEffect(() => {
@@ -32,6 +34,7 @@ const Detail = () => {
         } else {
             window.scrollTo(0, 0)
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[loading])
     
     useEffect(() => {
