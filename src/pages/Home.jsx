@@ -28,7 +28,6 @@ const Home = () => {
     
     useEffect(() => {
         fetchData()
-         console.log(favorite)
     }, [])
     
     function fetchData() {

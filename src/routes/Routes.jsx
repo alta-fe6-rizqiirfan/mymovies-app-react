@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useMemo, useState, useEffect} from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useDispatch } from 'react-redux';
